@@ -10,6 +10,9 @@ import UIKit
 import SnapKit
 import Combine
 
+typealias FavoriteDataSource = UICollectionViewDiffableDataSource<FavoriteSection, Movie>
+typealias FavoriteSnapshot = NSDiffableDataSourceSnapshot<FavoriteSection, Movie>
+
 class FavoriteViewController: UIViewController, Combinable {
     enum Design {
         static let sideInsets: CGFloat = 16
@@ -28,7 +31,6 @@ class FavoriteViewController: UIViewController, Combinable {
         collectionView.backgroundColor = .systemBackground
         
         collectionView.delegate = self
-        collectionView.dataSource = self
         
         collectionView.register(MovieCompactCell.self, forCellWithReuseIdentifier: MovieCompactCell.reuseIndentifier)
         collectionView.register(
@@ -41,10 +43,10 @@ class FavoriteViewController: UIViewController, Combinable {
     }()
     
     let searchController = UISearchController(searchResultsController: nil)
+    private lazy var dataSource = self.createDatasource()
     
     // MARK: Datas
     let viewModel = FavoriteViewModel(repository: FavoriteRepositoryImpl())
-    var sections: [FavoriteSection] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -72,44 +74,42 @@ class FavoriteViewController: UIViewController, Combinable {
         }
     }
     
-    func setupBinding() {
-        subscriptions[.data] = viewModel.$filteredSections.sink(receiveValue: { [weak self] sections in
-            self?.sections = sections
-            self?.collectionView.reloadData()
-        })
-    }
-}
-
-extension FavoriteViewController: UICollectionViewDataSource {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return sections[section].movies.count
-    }
-    
-    func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return sections.count
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MovieCompactCell.reuseIndentifier, for: indexPath) as? MovieCompactCell else {
-            return UICollectionViewCell()
+    func createDatasource() -> FavoriteDataSource {
+        let dataSource = FavoriteDataSource(collectionView: collectionView) { collectionView, indexPath, movie -> UICollectionViewCell? in
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MovieCompactCell.reuseIndentifier, for: indexPath) as? MovieCompactCell
+            cell?.movie = movie
+            return cell
         }
-        cell.movie = sections[indexPath.section].movies[indexPath.row]
         
-        return cell
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        guard kind == UICollectionView.elementKindSectionHeader,
-              let headerView = collectionView.dequeueReusableSupplementaryView(
+        dataSource.supplementaryViewProvider = { [weak self] collectionView, kind, indexPath in
+            guard kind == UICollectionView.elementKindSectionHeader else { return nil }
+            let headerView = collectionView.dequeueReusableSupplementaryView(
                 ofKind: kind,
                 withReuseIdentifier: HomeSectionHeaderView.reuseIndentifier,
                 for: indexPath
-              ) as? HomeSectionHeaderView else {
-            return UICollectionReusableView()
+            ) as? HomeSectionHeaderView
+            headerView?.titleLabel.text = self?.dataSource.snapshot().sectionIdentifiers[indexPath.section].genre.name
+            
+            return headerView
         }
         
-        headerView.titleLabel.text = sections[indexPath.section].genre.name
-        return headerView
+        return dataSource
+    }
+    
+    func applyData(_ sections: [FavoriteSection]) {
+        var snapshot = FavoriteSnapshot()
+        snapshot.appendSections(sections)
+        sections.forEach { section in
+            snapshot.appendItems(section.movies, toSection: section)
+        }
+        
+        self.dataSource.apply(snapshot, animatingDifferences: true)
+    }
+    
+    func setupBinding() {
+        subscriptions[.data] = viewModel.$filteredSections.sink(receiveValue: { [weak self] sections in
+            self?.applyData(sections)
+        })
     }
 }
 

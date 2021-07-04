@@ -43,3 +43,13 @@ struct Movie: Codable {
         return "https://image.tmdb.org/t/p/w780/\(backdropPath ?? posterPath ?? "")"
     }
 }
+
+extension Movie: Hashable {
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+    
+    static func ==(lhs: Movie, rhs: Movie) -> Bool {
+        lhs.id == rhs.id
+    }
+}

@@ -274,26 +274,6 @@
                 },
                 {
                     "adult": false,
-                    "backdrop_path": "/roYyPiQDQKmIKUEhO912693tSja.jpg",
-                    "genre_ids": [
-                        27,
-                        18,
-                        878
-                    ],
-                    "id": 447332,
-                    "original_language": "en",
-                    "original_title": "A Quiet Place",
-                    "overview": "A family is forced to live in silence while hiding from creatures that hunt by sound.",
-                    "popularity": 332.714,
-                    "poster_path": "/nAU74GmpUk7t5iklEp3bufwDq4n.jpg",
-                    "release_date": "2018-04-03",
-                    "title": "A Quiet Place",
-                    "video": false,
-                    "vote_average": 7.4,
-                    "vote_count": 10131
-                },
-                {
-                    "adult": false,
                     "backdrop_path": "/8LHSDyRizQ4kQz5rEHPKyXPvMG3.jpg",
                     "genre_ids": [
                         16,
@@ -350,26 +330,6 @@
                     "video": false,
                     "vote_average": 8.3,
                     "vote_count": 22094
-                },
-                {
-                    "adult": false,
-                    "backdrop_path": "/drulhSX7P5TQlEMQZ3JoXKSDEfz.jpg",
-                    "genre_ids": [
-                        18,
-                        14,
-                        878
-                    ],
-                    "id": 581389,
-                    "original_language": "ko",
-                    "original_title": "승리호",
-                    "overview": "When the crew of a space junk collector ship called The Victory discovers a humanoid robot named Dorothy that's known to be a weapon of mass destruction, they get involved in a risky business deal which puts their lives at stake.",
-                    "popularity": 305.644,
-                    "poster_path": "/p9YDHJKvUoi7v2SCd3vLGPae1Xp.jpg",
-                    "release_date": "2021-02-05",
-                    "title": "Space Sweepers",
-                    "video": false,
-                    "vote_average": 7.2,
-                    "vote_count": 589
                 },
                 {
                     "adult": false,
