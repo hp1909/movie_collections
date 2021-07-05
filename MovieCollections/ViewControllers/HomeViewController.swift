@@ -10,6 +10,9 @@ import UIKit
 import Combine
 import SnapKit
 
+typealias HomeDataSource = UICollectionViewDiffableDataSource<HomeSection, HomeSection>
+typealias HomeDSSnapshot = NSDiffableDataSourceSnapshot<HomeSection, HomeSection>
+
 class HomeViewController: UIViewController, Combinable {
     enum HomeSubscriptionKey: String {
         case movies
@@ -34,10 +37,11 @@ class HomeViewController: UIViewController, Combinable {
         collectionView.register(HomeSectionHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: HomeSectionHeaderView.reuseIndentifier)
         
         collectionView.delegate = self
-        collectionView.dataSource = self
         
         return collectionView
     }()
+
+    private lazy var dataSource = self.createDataSource()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -60,48 +64,47 @@ class HomeViewController: UIViewController, Combinable {
     }
     
     func setupBindings() {
-        subscriptions[.movies] = viewModel.$sections.sink(receiveValue: { [weak self] _ in
-            self?.collectionView.reloadData()
+        subscriptions[.movies] = viewModel.$sections.sink(receiveValue: { [weak self] sections in
+            var snapshot = HomeDSSnapshot()
+            snapshot.appendSections(sections)
+            sections.forEach { section in
+                snapshot.appendItems([section], toSection: section)
+            }
+            self?.dataSource.apply(snapshot, animatingDifferences: true)
         })
     }
-}
 
-extension HomeViewController: UICollectionViewDataSource {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 1
-    }
-    
-    func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return viewModel.sections.count
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeMoviesCollectionCell.reuseIndentifier, for: indexPath) as! HomeMoviesCollectionCell
-        cell.data = viewModel.sections[indexPath.section]
-        
-        return cell
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        guard kind == UICollectionView.elementKindSectionHeader else {
-            return UICollectionReusableView()
+    private func createDataSource() -> HomeDataSource {
+        let dataSource = HomeDataSource(collectionView: collectionView) { collectionView, indexPath, movieSection in
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: HomeMoviesCollectionCell.reuseIndentifier,
+                for: indexPath
+            ) as? HomeMoviesCollectionCell
+            cell?.data = movieSection
+
+            return cell
         }
-        
-        let header = collectionView.dequeueReusableSupplementaryView(
-            ofKind: UICollectionView.elementKindSectionHeader,
-            withReuseIdentifier: HomeSectionHeaderView.reuseIndentifier,
-            for: indexPath
-        ) as! HomeSectionHeaderView
-        header.titleLabel.text = viewModel.sections[indexPath.section].title
-        
-        return header
+
+        dataSource.supplementaryViewProvider = { [weak self] collectionView, kind, indexPath in
+            guard kind == UICollectionView.elementKindSectionHeader else { return nil }
+            let headerView = collectionView.dequeueReusableSupplementaryView(
+                ofKind: kind,
+                withReuseIdentifier: HomeSectionHeaderView.reuseIndentifier,
+                for: indexPath
+            ) as? HomeSectionHeaderView
+            headerView?.titleLabel.text = self?.dataSource.snapshot().sectionIdentifiers[indexPath.section].title
+
+            return headerView
+        }
+
+        return dataSource
     }
 }
 
 extension HomeViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         var height: CGFloat = 300
-        if (viewModel.sections[indexPath.section].index == .feature) {
+        if (dataSource.snapshot().sectionIdentifiers[indexPath.section].index == .feature) {
             height = 150
         }
         return CGSize(width: collectionView.frame.width, height: height)
@@ -112,7 +115,7 @@ extension HomeViewController: UICollectionViewDelegateFlowLayout {
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        switch viewModel.sections[section].index {
+        switch dataSource.snapshot().sectionIdentifiers[section].index {
         case .feature:
             return .zero
         default:

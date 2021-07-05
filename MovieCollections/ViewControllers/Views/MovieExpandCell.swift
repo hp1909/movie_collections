@@ -23,6 +23,7 @@ class MovieExpandCell: UICollectionViewCell, Reusable {
     let imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
+        imageView.backgroundColor = .lightGray
         
         return imageView
     }()
