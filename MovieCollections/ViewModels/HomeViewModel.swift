@@ -11,6 +11,7 @@ import Combine
 enum HomeSectionIndex: Int {
     case none
     case feature
+    case collections
     case trending
     case topRated
     
@@ -18,6 +19,7 @@ enum HomeSectionIndex: Int {
         switch self {
         case .trending: return "Top trending"
         case .topRated: return "Top Rated"
+        case .collections: return "Favorite Collections"
         default: return ""
         }
     }
@@ -25,8 +27,9 @@ enum HomeSectionIndex: Int {
 
 class HomeViewModel: Combinable {
     enum HomeVMSubscriptionKey: String {
-        case topRated
         case upcoming
+        case collections
+        case topRated
         case trending
     }
     typealias SubscriptionKey = HomeVMSubscriptionKey
@@ -52,6 +55,10 @@ class HomeViewModel: Combinable {
 
         subscriptions[.upcoming] = repository.getUpcomingMovies().sink(receiveValue: { [weak self] movies in
             self?.parseMovie(movies: movies, index: .feature)
+        })
+
+        subscriptions[.collections] = repository.getFavoriteCollections().sink(receiveValue: { [weak self] movies in
+            self?.parseMovie(movies: movies, index: .collections)
         })
     }
     

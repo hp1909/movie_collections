@@ -33,8 +33,9 @@ class HomeViewController: UIViewController, Combinable {
         
         collectionView.register(MovieExpandCell.self, forCellWithReuseIdentifier: MovieExpandCell.reuseIndentifier)
         collectionView.register(MovieCompactCell.self, forCellWithReuseIdentifier: MovieCompactCell.reuseIndentifier)
-        collectionView.register(HomeMoviesCollectionCell.self, forCellWithReuseIdentifier: HomeMoviesCollectionCell.reuseIndentifier)
+        collectionView.register(MoviesHorizontalCell.self, forCellWithReuseIdentifier: MoviesHorizontalCell.reuseIndentifier)
         collectionView.register(HomeSectionHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: HomeSectionHeaderView.reuseIndentifier)
+        collectionView.register(MovieCollectionsCell.self, forCellWithReuseIdentifier: MovieCollectionsCell.reuseIndentifier)
         
         collectionView.delegate = self
         
@@ -75,11 +76,23 @@ class HomeViewController: UIViewController, Combinable {
     }
 
     private func createDataSource() -> HomeDataSource {
-        let dataSource = HomeDataSource(collectionView: collectionView) { collectionView, indexPath, movieSection in
+        let dataSource = HomeDataSource(collectionView: collectionView) { [weak self] collectionView, indexPath, movieSection in
+            guard let self = self else { return nil }
+            let section = self.dataSource.snapshot().sectionIdentifiers[indexPath.section]
+            if section.index == .collections {
+                let cell = collectionView.dequeueReusableCell(
+                    withReuseIdentifier: MovieCollectionsCell.reuseIndentifier,
+                    for: indexPath
+                ) as? MovieCollectionsCell
+                cell?.data = movieSection
+
+                return cell
+            }
+
             let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: HomeMoviesCollectionCell.reuseIndentifier,
+                withReuseIdentifier: MoviesHorizontalCell.reuseIndentifier,
                 for: indexPath
-            ) as? HomeMoviesCollectionCell
+            ) as? MoviesHorizontalCell
             cell?.data = movieSection
 
             return cell
@@ -92,6 +105,9 @@ class HomeViewController: UIViewController, Combinable {
                 withReuseIdentifier: HomeSectionHeaderView.reuseIndentifier,
                 for: indexPath
             ) as? HomeSectionHeaderView
+            headerView?.onTap = { [weak self] in
+                self?.tabBarController?.selectedIndex = 1
+            }
             headerView?.titleLabel.text = self?.dataSource.snapshot().sectionIdentifiers[indexPath.section].title
 
             return headerView
@@ -103,9 +119,14 @@ class HomeViewController: UIViewController, Combinable {
 
 extension HomeViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        var height: CGFloat = 300
-        if (dataSource.snapshot().sectionIdentifiers[indexPath.section].index == .feature) {
+        var height: CGFloat = 250
+        switch dataSource.snapshot().sectionIdentifiers[indexPath.section].index {
+        case .feature:
             height = 150
+        case .collections:
+            height = collectionView.frame.width * 3 / 5
+        default:
+            break
         }
         return CGSize(width: collectionView.frame.width, height: height)
     }

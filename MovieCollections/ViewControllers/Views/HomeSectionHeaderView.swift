@@ -17,6 +17,8 @@ class HomeSectionHeaderView: UICollectionReusableView, Reusable {
         
         return label
     }()
+
+    var onTap: (() -> Void)?
     
     private let trailingIcon: UIImageView = {
         let icon = UIImage(systemName: "chevron.right")
@@ -42,6 +44,15 @@ class HomeSectionHeaderView: UICollectionReusableView, Reusable {
             titleLabel,
             trailingIcon
         )
+
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapHeader(_:)))
+        addGestureRecognizer(tapGesture)
+    }
+
+    @objc func tapHeader(_ sender: Any) {
+        if titleLabel.text == "Favorite Collections" {
+            onTap?()
+        }
     }
     
     func setupLayout() {

@@ -13,7 +13,7 @@ enum MoviesCollectionType {
     case compact
 }
 
-class HomeMoviesCollectionCell: UICollectionViewCell, Reusable {
+class MoviesHorizontalCell: UICollectionViewCell, Reusable {
     static let reuseIndentifier: String = "HomeMoviesCollectionCell"
     
     var data: HomeSection = HomeSection(movies: [], title: "", index: .none) {
@@ -62,7 +62,7 @@ class HomeMoviesCollectionCell: UICollectionViewCell, Reusable {
     }
 }
 
-extension HomeMoviesCollectionCell: UICollectionViewDataSource {
+extension MoviesHorizontalCell: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return data.index != .none ? data.movies.count : 0
     }
@@ -83,7 +83,7 @@ extension HomeMoviesCollectionCell: UICollectionViewDataSource {
     }
 }
 
-extension HomeMoviesCollectionCell: UICollectionViewDelegateFlowLayout {
+extension MoviesHorizontalCell: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         var width: CGFloat = 200
         if type == .expand {
