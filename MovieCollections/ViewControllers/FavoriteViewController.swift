@@ -32,11 +32,11 @@ class FavoriteViewController: UIViewController, Combinable {
         
         collectionView.delegate = self
         
-        collectionView.register(MovieCompactCell.self, forCellWithReuseIdentifier: MovieCompactCell.reuseIndentifier)
+        collectionView.register(MovieCell.self, forCellWithReuseIdentifier: MovieCell.reuseIndentifier)
         collectionView.register(
-            HomeSectionHeaderView.self,
+            SectionHeaderView.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
-            withReuseIdentifier: HomeSectionHeaderView.reuseIndentifier
+            withReuseIdentifier: SectionHeaderView.reuseIndentifier
         )
         
         return collectionView
@@ -76,7 +76,7 @@ class FavoriteViewController: UIViewController, Combinable {
     
     func createDatasource() -> FavoriteDataSource {
         let dataSource = FavoriteDataSource(collectionView: collectionView) { collectionView, indexPath, movie -> UICollectionViewCell? in
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MovieCompactCell.reuseIndentifier, for: indexPath) as? MovieCompactCell
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MovieCell.reuseIndentifier, for: indexPath) as? MovieCell
             cell?.movie = movie
             return cell
         }
@@ -85,9 +85,9 @@ class FavoriteViewController: UIViewController, Combinable {
             guard kind == UICollectionView.elementKindSectionHeader else { return nil }
             let headerView = collectionView.dequeueReusableSupplementaryView(
                 ofKind: kind,
-                withReuseIdentifier: HomeSectionHeaderView.reuseIndentifier,
+                withReuseIdentifier: SectionHeaderView.reuseIndentifier,
                 for: indexPath
-            ) as? HomeSectionHeaderView
+            ) as? SectionHeaderView
             headerView?.titleLabel.text = self?.dataSource.snapshot().sectionIdentifiers[indexPath.section].genre.name
             
             return headerView

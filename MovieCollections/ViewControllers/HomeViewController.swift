@@ -10,8 +10,8 @@ import UIKit
 import Combine
 import SnapKit
 
-typealias HomeDataSource = UICollectionViewDiffableDataSource<HomeSection, HomeSection>
-typealias HomeDSSnapshot = NSDiffableDataSourceSnapshot<HomeSection, HomeSection>
+typealias HomeDataSource = UICollectionViewDiffableDataSource<HomeSection, HomeItem>
+typealias HomeDSSnapshot = NSDiffableDataSourceSnapshot<HomeSection, HomeItem>
 
 class HomeViewController: UIViewController, Combinable {
     enum HomeSubscriptionKey: String {
@@ -30,13 +30,6 @@ class HomeViewController: UIViewController, Combinable {
     private lazy var collectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
         collectionView.backgroundColor = .clear
-        
-        collectionView.register(MovieExpandCell.self, forCellWithReuseIdentifier: MovieExpandCell.reuseIndentifier)
-        collectionView.register(MovieCompactCell.self, forCellWithReuseIdentifier: MovieCompactCell.reuseIndentifier)
-        collectionView.register(MoviesHorizontalCell.self, forCellWithReuseIdentifier: MoviesHorizontalCell.reuseIndentifier)
-        collectionView.register(HomeSectionHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: HomeSectionHeaderView.reuseIndentifier)
-        collectionView.register(MovieCollectionsCell.self, forCellWithReuseIdentifier: MovieCollectionsCell.reuseIndentifier)
-        
         collectionView.delegate = self
         
         return collectionView
@@ -53,8 +46,10 @@ class HomeViewController: UIViewController, Combinable {
         
         viewModel.fetchData()
     }
-    
+
+    // MARK: Setups
     func setupViews() {
+        registerCells()
         view.addSubview(collectionView)
     }
     
@@ -75,8 +70,24 @@ class HomeViewController: UIViewController, Combinable {
         })
     }
 
+    // MARK: Cell registrations
+    func registerCells() {
+        collectionView.register(MovieBigCell.self, forCellWithReuseIdentifier: MovieBigCell.reuseIndentifier)
+        collectionView.register(MovieCell.self, forCellWithReuseIdentifier: MovieCell.reuseIndentifier)
+        collectionView.register(MoviesContainerCell.self, forCellWithReuseIdentifier: MoviesContainerCell.reuseIndentifier)
+        collectionView.register(MovieCollectionsCell.self, forCellWithReuseIdentifier: MovieCollectionsCell.reuseIndentifier)
+        collectionView.register(
+            SectionHeaderView.self,
+            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
+            withReuseIdentifier: SectionHeaderView.reuseIndentifier
+        )
+    }
+
+    // MARK: Create datasource
     private func createDataSource() -> HomeDataSource {
-        let dataSource = HomeDataSource(collectionView: collectionView) { [weak self] collectionView, indexPath, movieSection in
+        let dataSource = HomeDataSource(
+            collectionView: collectionView
+        ) { [weak self] collectionView, indexPath, movieSection in
             guard let self = self else { return nil }
             let section = self.dataSource.snapshot().sectionIdentifiers[indexPath.section]
             if section.index == .collections {
@@ -90,9 +101,9 @@ class HomeViewController: UIViewController, Combinable {
             }
 
             let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: MoviesHorizontalCell.reuseIndentifier,
+                withReuseIdentifier: MoviesContainerCell.reuseIndentifier,
                 for: indexPath
-            ) as? MoviesHorizontalCell
+            ) as? MoviesContainerCell
             cell?.data = movieSection
 
             return cell
@@ -102,9 +113,9 @@ class HomeViewController: UIViewController, Combinable {
             guard kind == UICollectionView.elementKindSectionHeader else { return nil }
             let headerView = collectionView.dequeueReusableSupplementaryView(
                 ofKind: kind,
-                withReuseIdentifier: HomeSectionHeaderView.reuseIndentifier,
+                withReuseIdentifier: SectionHeaderView.reuseIndentifier,
                 for: indexPath
-            ) as? HomeSectionHeaderView
+            ) as? SectionHeaderView
             headerView?.onTap = { [weak self] in
                 self?.tabBarController?.selectedIndex = 1
             }
@@ -115,8 +126,84 @@ class HomeViewController: UIViewController, Combinable {
 
         return dataSource
     }
+
+    // MARK: CollectionView layout
+    func createCollectionViewLayout() -> UICollectionViewLayout? {
+        nil
+    }
+
+
+    //   +----------------------------------+
+    //   |                                  |
+    //   |  +----------------------------+  |      +-----------------------------------------------------+
+    //   |  |~~~~~~~~~~~~~~~~~~~~~~~~~~~~|  |      | Item sized:                                         |
+    //   |  |~~~~~~~~~~~~~~~~~~~~~~~~~~~~|<-+------| *Width: FullWidth - 32, *Height: 150                |
+    //   |  |~~~~~~~~~~~~~~~~~~~~~~~~~~~~|  |      |* spacing between items: 16                          |
+    //   |  |~~~~~~~~~~~~~~~~~~~~~~~~~~~~|  |      +-----------------------------------------------------+
+    //   |  +----------------------------+  |
+    //   |                                  |
+    //   |                                  |
+    //   |                                  |
+    //   |                                  |
+    //   |                                  |<----- Screen
+    //   |                                  |
+    //   |                                  |
+    //   +----------------------------------+
+
+    func createUpcomingSection() -> NSCollectionLayoutSection? {
+        nil
+    }
+
+    //   +----------------------------------+
+    //   |                                  |
+    //   |  +------------+ +------------+   |      +-----------------------------------------------------+
+    //   |  |~~~~~~~~~~~~| |~~~~~~~~~~~~|   |      | Item sized:                                         |
+    //   |  |~~~~~~~~~~~~| |~~~~~~~~~~~~|<--+------| *Width: 200, *Height: 250                           |
+    //   |  |~~~~~~~~~~~~| |~~~~~~~~~~~~|   |      |* spacing between items: 16                          |
+    //   |  |~~~~~~~~~~~~| |~~~~~~~~~~~~|   |      +-----------------------------------------------------+
+    //   |  +------------+ +------------+   |
+    //   |  ==========     =========        |
+    //   |  =====          =====            |
+    //   |                                  |
+    //   |                                  |
+    //   |                                  |<----- Screen
+    //   |                                  |
+    //   |                                  |
+    //   +----------------------------------+
+
+    func createHorizontalSection() -> NSCollectionLayoutSection? {
+        nil
+    }
+
+    //   +----------------------------------+
+    //   |                                  |
+    //   |  +---------+--------+---------+  |
+    //   |  |   1/2   |        |   1/2   |  |
+    //   |  |         |        |         |  |
+    //   |  |---------|        |---------|  |
+    //   |  |   1/2   |        |   1/2   |  |
+    //   |  |         |        |         |  |
+    //   |  +---------+--------+---------+  |
+    //   |                                  |
+    //   |  |---------|--------|---------|  |
+    //   |      1/3       1/3      1/3      |
+    //   |                                  |<----- Screen
+    //   |                                  |
+    //   |                                  |
+    //   +----------------------------------+
+
+    func createCollectionSection() -> NSCollectionLayoutSection? {
+        nil
+    }
+
+
+    // Size: (Width: Full width, Height: 60)
+    func createSectionHeaderLayout() -> NSCollectionLayoutBoundarySupplementaryItem? {
+        nil
+    }
 }
 
+// MARK: Flow layout delegate
 extension HomeViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         var height: CGFloat = 250

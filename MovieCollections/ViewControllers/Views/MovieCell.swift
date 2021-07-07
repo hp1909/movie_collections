@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-class MovieCompactCell: UICollectionViewCell, Reusable {
+class MovieCell: UICollectionViewCell, Reusable {
     static let reuseIndentifier: String = "HomeMovieCompactCell"
     
     var movie: Movie? {

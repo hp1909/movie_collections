@@ -35,19 +35,7 @@ class MainTabBarController: UITabBarController {
                 title: "Favorite",
                 image: UIImage(systemName: "heart"),
                 selectedImage: UIImage(systemName: "heart.fill")
-            ),
-            createNavController(
-                for: HomeViewController(),
-                title: "Search",
-                image: UIImage(systemName: "magnifyingglass.circle"),
-                selectedImage: UIImage(systemName: "magnifyingglass.circle.fill")
-            ),
-            createNavController(
-                for: HomeViewController(),
-                title: "Settings",
-                image: UIImage(systemName: "gearshape"),
-                selectedImage: UIImage(systemName: "gearshape.fill")
-            ),
+            )
         ]
     }
     

@@ -20,3 +20,5 @@ struct HomeSection: Hashable {
         lhs.index == rhs.index
     }
 }
+
+typealias HomeItem = HomeSection

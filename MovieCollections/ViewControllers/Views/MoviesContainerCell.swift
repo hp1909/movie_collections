@@ -13,7 +13,7 @@ enum MoviesCollectionType {
     case compact
 }
 
-class MoviesHorizontalCell: UICollectionViewCell, Reusable {
+class MoviesContainerCell: UICollectionViewCell, Reusable {
     static let reuseIndentifier: String = "HomeMoviesCollectionCell"
     
     var data: HomeSection = HomeSection(movies: [], title: "", index: .none) {
@@ -34,8 +34,8 @@ class MoviesHorizontalCell: UICollectionViewCell, Reusable {
         collectionView.delegate = self
         collectionView.dataSource = self
         
-        collectionView.register(MovieCompactCell.self, forCellWithReuseIdentifier: MovieCompactCell.reuseIndentifier)
-        collectionView.register(MovieExpandCell.self, forCellWithReuseIdentifier: MovieExpandCell.reuseIndentifier)
+        collectionView.register(MovieCell.self, forCellWithReuseIdentifier: MovieCell.reuseIndentifier)
+        collectionView.register(MovieBigCell.self, forCellWithReuseIdentifier: MovieBigCell.reuseIndentifier)
         
         return collectionView
     }()
@@ -62,7 +62,7 @@ class MoviesHorizontalCell: UICollectionViewCell, Reusable {
     }
 }
 
-extension MoviesHorizontalCell: UICollectionViewDataSource {
+extension MoviesContainerCell: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return data.index != .none ? data.movies.count : 0
     }
@@ -70,12 +70,12 @@ extension MoviesHorizontalCell: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         switch data.index {
         case .feature:
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MovieExpandCell.reuseIndentifier, for: indexPath) as! MovieExpandCell
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MovieBigCell.reuseIndentifier, for: indexPath) as! MovieBigCell
             cell.movie = data.movies[indexPath.row]
             
             return cell
         default:
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MovieCompactCell.reuseIndentifier, for: indexPath) as! MovieCompactCell
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MovieCell.reuseIndentifier, for: indexPath) as! MovieCell
             cell.movie = data.movies[indexPath.row]
             
             return cell
@@ -83,7 +83,7 @@ extension MoviesHorizontalCell: UICollectionViewDataSource {
     }
 }
 
-extension MoviesHorizontalCell: UICollectionViewDelegateFlowLayout {
+extension MoviesContainerCell: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         var width: CGFloat = 200
         if type == .expand {

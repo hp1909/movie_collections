@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 import SDWebImage
 
-class MovieExpandCell: UICollectionViewCell, Reusable {
+class MovieBigCell: UICollectionViewCell, Reusable {
     static let reuseIndentifier: String = "HomeMovieExpandCell"
     
     var movie: Movie? {
