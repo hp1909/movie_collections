@@ -73,7 +73,7 @@ extension MovieCollectionsCell: UICollectionViewDataSource {
         ) as? CollectionItemCell else {
             return UICollectionViewCell()
         }
-        cell.imageView.sd_setImage(data?.movies[indexPath.row].backdropFullPath)
+        cell.imageView.sd_setImage(data?.movies[indexPath.row].data.backdropFullPath)
 
         return cell
     }

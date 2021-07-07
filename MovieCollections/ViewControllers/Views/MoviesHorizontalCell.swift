@@ -71,12 +71,12 @@ extension MoviesHorizontalCell: UICollectionViewDataSource {
         switch data.index {
         case .feature:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MovieExpandCell.reuseIndentifier, for: indexPath) as! MovieExpandCell
-            cell.movie = data.movies[indexPath.row]
+            cell.movie = data.movies[indexPath.row].data
             
             return cell
         default:
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MovieCompactCell.reuseIndentifier, for: indexPath) as! MovieCompactCell
-            cell.movie = data.movies[indexPath.row]
+            cell.movie = data.movies[indexPath.row].data
             
             return cell
         }

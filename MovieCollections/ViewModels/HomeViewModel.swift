@@ -46,23 +46,23 @@ class HomeViewModel: Combinable {
     
     func fetchData() {
         subscriptions[.trending] = repository.getTrendingMovies().sink { [weak self] movies in
-            self?.parseMovie(movies: movies, index: .trending)
+            self?.parseMovie(movies: movies.map({ HomeMovie(data: $0, type: .horizontal) }), index: .trending)
         }
         
         subscriptions[.topRated] = repository.getTopRatedMovies().sink(receiveValue: { [weak self] movies in
-            self?.parseMovie(movies: movies, index: .topRated)
+            self?.parseMovie(movies: movies.map({ HomeMovie(data: $0, type: .horizontal) }), index: .topRated)
         })
 
         subscriptions[.upcoming] = repository.getUpcomingMovies().sink(receiveValue: { [weak self] movies in
-            self?.parseMovie(movies: movies, index: .feature)
+            self?.parseMovie(movies: movies.map({ HomeMovie(data: $0, type: .feature) }), index: .feature)
         })
 
         subscriptions[.collections] = repository.getFavoriteCollections().sink(receiveValue: { [weak self] movies in
-            self?.parseMovie(movies: movies, index: .collections)
+            self?.parseMovie(movies: movies.map({ HomeMovie(data: $0, type: .collection) }), index: .collections)
         })
     }
     
-    func parseMovie(movies: [Movie], index: HomeSectionIndex) {
+    func parseMovie(movies: [HomeMovie], index: HomeSectionIndex) {
         let section = HomeSection(movies: movies, title: index.header, index: index)
         sections = sections.safeAppend(section).sortByIndex()
     }

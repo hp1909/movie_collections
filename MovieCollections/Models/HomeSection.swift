@@ -8,7 +8,7 @@
 import Foundation
 
 struct HomeSection: Hashable {
-    var movies: [Movie]
+    var movies: [HomeMovie]
     var title: String
     var index: HomeSectionIndex
 
