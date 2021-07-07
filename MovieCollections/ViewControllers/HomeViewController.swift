@@ -89,24 +89,7 @@ class HomeViewController: UIViewController, Combinable {
             collectionView: collectionView
         ) { [weak self] collectionView, indexPath, movieSection in
             guard let self = self else { return nil }
-            let section = self.dataSource.snapshot().sectionIdentifiers[indexPath.section]
-            if section.index == .collections {
-                let cell = collectionView.dequeueReusableCell(
-                    withReuseIdentifier: MovieCollectionsCell.reuseIndentifier,
-                    for: indexPath
-                ) as? MovieCollectionsCell
-                cell?.data = movieSection
-
-                return cell
-            }
-
-            let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: MoviesContainerCell.reuseIndentifier,
-                for: indexPath
-            ) as? MoviesContainerCell
-            cell?.data = movieSection
-
-            return cell
+            return self.oldCellConfigurations(collectionView, indexPath, movieSection)
         }
 
         dataSource.supplementaryViewProvider = { [weak self] collectionView, kind, indexPath in
@@ -125,6 +108,58 @@ class HomeViewController: UIViewController, Combinable {
         }
 
         return dataSource
+    }
+
+    // MARK: Old cell configurations
+    func oldCellConfigurations(
+        _ collectionView: UICollectionView,
+        _ indexPath: IndexPath,
+        _ item: HomeItem
+    ) -> UICollectionViewCell? {
+        let section = self.dataSource.snapshot().sectionIdentifiers[indexPath.section]
+        if section.index == .collections {
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: MovieCollectionsCell.reuseIndentifier,
+                for: indexPath
+            ) as? MovieCollectionsCell
+            cell?.data = item
+
+            return cell
+        }
+
+        let cell = collectionView.dequeueReusableCell(
+            withReuseIdentifier: MoviesContainerCell.reuseIndentifier,
+            for: indexPath
+        ) as? MoviesContainerCell
+        cell?.data = item
+
+        return cell
+    }
+
+    // MARK: New Cell configurations
+    func newCellConfigurations(
+        _ collectionView: UICollectionView,
+        _ indexPath: IndexPath,
+        _ item: Movie
+    ) -> UICollectionViewCell? {
+        let section = self.dataSource.snapshot().sectionIdentifiers[indexPath.section]
+        switch section.index {
+        case .feature:
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MovieBigCell.reuseIndentifier, for: indexPath) as? MovieBigCell
+            cell?.movie = item
+
+            return cell
+        case .collections:
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionItemCell.reuseIndentifier, for: indexPath) as? CollectionItemCell
+            cell?.imageView.sd_setImage(item.backdropFullPath)
+
+            return cell
+        default:
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MovieCell.reuseIndentifier, for: indexPath) as? MovieCell
+            cell?.movie = item
+
+            return cell
+        }
     }
 
     // MARK: CollectionView layout
