@@ -10,13 +10,14 @@ import Combine
 
 enum HomeSectionIndex: Int {
     case none
-    case feature
     case collections
+    case feature
     case trending
     case topRated
     
     var header: String {
         switch self {
+        case .feature: return "Featured"
         case .trending: return "Top trending"
         case .topRated: return "Top Rated"
         case .collections: return "Favorite Collections"

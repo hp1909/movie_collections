@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 struct Movie: Codable {
     var backdropPath: String?
@@ -49,7 +50,7 @@ extension Movie: Hashable {
         hasher.combine(id)
     }
     
-    static func ==(lhs: Movie, rhs: Movie) -> Bool {
-        lhs.id == rhs.id
-    }
+//    static func ==(lhs: Movie, rhs: Movie) -> Bool {
+//        lhs.id == rhs.id
+//    }
 }

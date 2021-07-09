@@ -35,6 +35,12 @@ class MainTabBarController: UITabBarController {
                 title: "Favorite",
                 image: UIImage(systemName: "heart"),
                 selectedImage: UIImage(systemName: "heart.fill")
+            ),
+            createNavController(
+                for: DemoViewController(),
+                title: "Demo",
+                image: UIImage(systemName: "heart"),
+                selectedImage: UIImage(systemName: "heart.fill")
             )
         ]
     }

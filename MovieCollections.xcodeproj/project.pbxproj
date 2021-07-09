@@ -39,6 +39,8 @@
 		BCC046992691A51F00DF1B24 /* FavoriteSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCC046982691A51F00DF1B24 /* FavoriteSection.swift */; };
 		BCC0469B2691AC9600DF1B24 /* FavoriteRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCC0469A2691AC9600DF1B24 /* FavoriteRepository.swift */; };
 		BCC0469D2691AD1100DF1B24 /* favorite.json in Resources */ = {isa = PBXBuildFile; fileRef = BCC0469C2691AD1100DF1B24 /* favorite.json */; };
+		CA3F6F272697424F00FE41D9 /* HomeSectionBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA3F6F262697424F00FE41D9 /* HomeSectionBackgroundView.swift */; };
+		CA3F6F292697598900FE41D9 /* DemoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA3F6F282697598900FE41D9 /* DemoViewController.swift */; };
 		CABE08FD2695FF5F0077DE91 /* HomeItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = CABE08FC2695FF5F0077DE91 /* HomeItem.swift */; };
 		CAEEF3B2269350DB002FCEC9 /* MoviesCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAEEF3B1269350DB002FCEC9 /* MoviesCollectionCell.swift */; };
 		CAEEF3B42693519E002FCEC9 /* CollectionItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAEEF3B32693519E002FCEC9 /* CollectionItemCell.swift */; };
@@ -96,6 +98,8 @@
 		BCC046982691A51F00DF1B24 /* FavoriteSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteSection.swift; sourceTree = "<group>"; };
 		BCC0469A2691AC9600DF1B24 /* FavoriteRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteRepository.swift; sourceTree = "<group>"; };
 		BCC0469C2691AD1100DF1B24 /* favorite.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = favorite.json; sourceTree = "<group>"; };
+		CA3F6F262697424F00FE41D9 /* HomeSectionBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeSectionBackgroundView.swift; sourceTree = "<group>"; };
+		CA3F6F282697598900FE41D9 /* DemoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoViewController.swift; sourceTree = "<group>"; };
 		CABE08FC2695FF5F0077DE91 /* HomeItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeItem.swift; sourceTree = "<group>"; };
 		CAEEF3B1269350DB002FCEC9 /* MoviesCollectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoviesCollectionCell.swift; sourceTree = "<group>"; };
 		CAEEF3B32693519E002FCEC9 /* CollectionItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionItemCell.swift; sourceTree = "<group>"; };
@@ -145,6 +149,7 @@
 				BC6C53FA26909AE300EF44F7 /* HomeViewController.swift */,
 				BC6C54002690A9E600EF44F7 /* Combinable.swift */,
 				BCC0469426919D9400DF1B24 /* FavoriteViewController.swift */,
+				CA3F6F282697598900FE41D9 /* DemoViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -160,6 +165,7 @@
 				BC6C541A2690BBDF00EF44F7 /* MovieBigCell.swift */,
 				CAEEF3B1269350DB002FCEC9 /* MoviesCollectionCell.swift */,
 				CAEEF3B32693519E002FCEC9 /* CollectionItemCell.swift */,
+				CA3F6F262697424F00FE41D9 /* HomeSectionBackgroundView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -416,6 +422,7 @@
 				BC6C54172690BB6D00EF44F7 /* HomeSection.swift in Sources */,
 				BC96282F269068A600AE04AB /* AppDelegate.swift in Sources */,
 				BC6C53FD26909AED00EF44F7 /* HomeViewModel.swift in Sources */,
+				CA3F6F292697598900FE41D9 /* DemoViewController.swift in Sources */,
 				CAEEF3B2269350DB002FCEC9 /* MoviesCollectionCell.swift in Sources */,
 				BC6C53F926909AD100EF44F7 /* MainTabBarController.swift in Sources */,
 				BC6C54042690ABCF00EF44F7 /* HomeMovieLoadingCell.swift in Sources */,
@@ -433,6 +440,7 @@
 				BC6C54202690C67F00EF44F7 /* MoviesResponse.swift in Sources */,
 				BC6C54012690A9E600EF44F7 /* Combinable.swift in Sources */,
 				BCC046992691A51F00DF1B24 /* FavoriteSection.swift in Sources */,
+				CA3F6F272697424F00FE41D9 /* HomeSectionBackgroundView.swift in Sources */,
 				BC6C53FB26909AE300EF44F7 /* HomeViewController.swift in Sources */,
 				BC6C54062690ADB500EF44F7 /* SectionHeaderView.swift in Sources */,
 			);

@@ -16,7 +16,7 @@ class APIService: APIServiceProtocol {
     static let shared: APIServiceProtocol = APIService()
     
     func get<T: Codable>(url: String) -> AnyPublisher<T, Error> {
-        let urlRequest = APIHelper.request(url, params: ["page": "1"])
+        let urlRequest = APIHelper.request(url, params: ["page": "3"])
         return URLSession.shared
             .dataTaskPublisher(for: urlRequest)
             .tryMap { element -> Data in
