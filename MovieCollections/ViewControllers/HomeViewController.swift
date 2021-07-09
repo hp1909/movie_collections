@@ -10,8 +10,8 @@ import UIKit
 import Combine
 import SnapKit
 
-typealias HomeDataSource = UICollectionViewDiffableDataSource<HomeSection, HomeItem>
-typealias HomeDSSnapshot = NSDiffableDataSourceSnapshot<HomeSection, HomeItem>
+typealias HomeDataSource = UICollectionViewDiffableDataSource<HomeSection, Movie>
+typealias HomeDSSnapshot = NSDiffableDataSourceSnapshot<HomeSection, Movie>
 
 class HomeViewController: UIViewController, Combinable {
     enum HomeSubscriptionKey: String {
@@ -28,9 +28,8 @@ class HomeViewController: UIViewController, Combinable {
     
     // MARK: CollectionView declarations
     private lazy var collectionView: UICollectionView = {
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: self.createCollectionViewLayout())
         collectionView.backgroundColor = .clear
-        collectionView.delegate = self
         
         return collectionView
     }()
@@ -64,7 +63,7 @@ class HomeViewController: UIViewController, Combinable {
             var snapshot = HomeDSSnapshot()
             snapshot.appendSections(sections)
             sections.forEach { section in
-                snapshot.appendItems([section], toSection: section)
+                snapshot.appendItems(section.movies, toSection: section)
             }
             self?.dataSource.apply(snapshot, animatingDifferences: true)
         })
@@ -74,11 +73,14 @@ class HomeViewController: UIViewController, Combinable {
     func registerCells() {
         collectionView.register(MovieBigCell.self, forCellWithReuseIdentifier: MovieBigCell.reuseIndentifier)
         collectionView.register(MovieCell.self, forCellWithReuseIdentifier: MovieCell.reuseIndentifier)
+        collectionView.register(CollectionItemCell.self, forCellWithReuseIdentifier: CollectionItemCell.reuseIndentifier)
+
         collectionView.register(MoviesContainerCell.self, forCellWithReuseIdentifier: MoviesContainerCell.reuseIndentifier)
         collectionView.register(MovieCollectionsCell.self, forCellWithReuseIdentifier: MovieCollectionsCell.reuseIndentifier)
+
         collectionView.register(
             SectionHeaderView.self,
-            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
+            forSupplementaryViewOfKind: "header",
             withReuseIdentifier: SectionHeaderView.reuseIndentifier
         )
     }
@@ -87,13 +89,13 @@ class HomeViewController: UIViewController, Combinable {
     private func createDataSource() -> HomeDataSource {
         let dataSource = HomeDataSource(
             collectionView: collectionView
-        ) { [weak self] collectionView, indexPath, movieSection in
+        ) { [weak self] collectionView, indexPath, movie in
             guard let self = self else { return nil }
-            return self.oldCellConfigurations(collectionView, indexPath, movieSection)
+            return self.newCellConfigurations(collectionView, indexPath, movie)
         }
 
         dataSource.supplementaryViewProvider = { [weak self] collectionView, kind, indexPath in
-            guard kind == UICollectionView.elementKindSectionHeader else { return nil }
+            guard kind == "header" else { return nil }
             let headerView = collectionView.dequeueReusableSupplementaryView(
                 ofKind: kind,
                 withReuseIdentifier: SectionHeaderView.reuseIndentifier,
@@ -163,8 +165,61 @@ class HomeViewController: UIViewController, Combinable {
     }
 
     // MARK: CollectionView layout
-    func createCollectionViewLayout() -> UICollectionViewLayout? {
-        nil
+    func createCollectionViewLayout() -> UICollectionViewLayout {
+        let layout = UICollectionViewCompositionalLayout { [weak self] index, _ in
+            guard let self = self else { return nil }
+            let section = self.dataSource.snapshot().sectionIdentifiers[index]
+
+            switch section.index {
+            case .collections:
+                return self.createCollectionSection()
+            case .feature:
+                return self.createUpcomingSection()
+            default:
+                return self.createHorizontalSection()
+            }
+        }
+
+        return layout
+    }
+
+    //   +----------------------------------+
+    //   |                                  |
+    //   |  +---------+--------+---------+  |
+    //   |  |   1/2   |        |   1/2   |  |
+    //   |  |         |        |         |  |
+    //   |  |---------|        |---------|  |
+    //   |  |   1/2   |        |   1/2   |  |
+    //   |  |         |        |         |  |
+    //   |  +---------+--------+---------+  |
+    //   |                                  |
+    //   |  |---------|--------|---------|  |
+    //   |      1/3       1/3      1/3      |
+    //   |                                  |<----- Screen
+    //   |                                  |
+    //   |                                  |
+    //   +----------------------------------+
+
+    func createCollectionSection() -> NSCollectionLayoutSection? {
+        let smallItemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(0.5))
+        let smallItem = NSCollectionLayoutItem(layoutSize: smallItemSize)
+        smallItem.contentInsets = NSDirectionalEdgeInsets(top: 2, leading: 2, bottom: 2, trailing: 2)
+
+        let smallGroupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1/3), heightDimension: .fractionalHeight(1))
+        let smallGroup = NSCollectionLayoutGroup.vertical(layoutSize: smallGroupSize, subitems: [smallItem])
+
+        let bigItemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1/3), heightDimension: .fractionalHeight(1))
+        let bigItem = NSCollectionLayoutItem(layoutSize: bigItemSize)
+        bigItem.contentInsets = NSDirectionalEdgeInsets(top: 2, leading: 2, bottom: 2, trailing: 2)
+
+        let containerGroupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalWidth(3/5))
+        let containerGroup = NSCollectionLayoutGroup.horizontal(layoutSize: containerGroupSize, subitems: [smallGroup, bigItem, smallGroup])
+
+        let section = NSCollectionLayoutSection(group: containerGroup)
+        section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16)
+        section.boundarySupplementaryItems = [self.createSectionHeaderLayout()]
+
+        return section
     }
 
 
@@ -186,7 +241,19 @@ class HomeViewController: UIViewController, Combinable {
     //   +----------------------------------+
 
     func createUpcomingSection() -> NSCollectionLayoutSection? {
-        nil
+        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1))
+        let item = NSCollectionLayoutItem(layoutSize: itemSize)
+
+        let groupSize = NSCollectionLayoutSize(widthDimension: .absolute(collectionView.frame.width - 32), heightDimension: .absolute(150))
+        let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
+
+        let section = NSCollectionLayoutSection(group: group)
+        section.interGroupSpacing = 12
+        section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16)
+        section.orthogonalScrollingBehavior = .continuous
+        section.boundarySupplementaryItems = [self.createSectionHeaderLayout()]
+
+        return section
     }
 
     //   +----------------------------------+
@@ -207,62 +274,27 @@ class HomeViewController: UIViewController, Combinable {
     //   +----------------------------------+
 
     func createHorizontalSection() -> NSCollectionLayoutSection? {
-        nil
-    }
+        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1))
+        let item = NSCollectionLayoutItem(layoutSize: itemSize)
 
-    //   +----------------------------------+
-    //   |                                  |
-    //   |  +---------+--------+---------+  |
-    //   |  |   1/2   |        |   1/2   |  |
-    //   |  |         |        |         |  |
-    //   |  |---------|        |---------|  |
-    //   |  |   1/2   |        |   1/2   |  |
-    //   |  |         |        |         |  |
-    //   |  +---------+--------+---------+  |
-    //   |                                  |
-    //   |  |---------|--------|---------|  |
-    //   |      1/3       1/3      1/3      |
-    //   |                                  |<----- Screen
-    //   |                                  |
-    //   |                                  |
-    //   +----------------------------------+
+        let groupSize = NSCollectionLayoutSize(widthDimension: .absolute(200), heightDimension: .absolute(250))
+        let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
 
-    func createCollectionSection() -> NSCollectionLayoutSection? {
-        nil
+        let section = NSCollectionLayoutSection(group: group)
+        section.orthogonalScrollingBehavior = .continuous
+        section.interGroupSpacing = 12
+        section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16)
+        section.boundarySupplementaryItems = [self.createSectionHeaderLayout()]
+
+        return section
     }
 
 
     // Size: (Width: Full width, Height: 60)
-    func createSectionHeaderLayout() -> NSCollectionLayoutBoundarySupplementaryItem? {
-        nil
-    }
-}
+    func createSectionHeaderLayout() -> NSCollectionLayoutBoundarySupplementaryItem {
+        let sectionHeaderSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .absolute(60))
+        let sectionHeader = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: sectionHeaderSize, elementKind: "header", alignment: .top)
 
-// MARK: Flow layout delegate
-extension HomeViewController: UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        var height: CGFloat = 250
-        switch dataSource.snapshot().sectionIdentifiers[indexPath.section].index {
-        case .feature:
-            height = 150
-        case .collections:
-            height = collectionView.frame.width * 3 / 5
-        default:
-            break
-        }
-        return CGSize(width: collectionView.frame.width, height: height)
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
-        return .zero
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        switch dataSource.snapshot().sectionIdentifiers[section].index {
-        case .feature:
-            return .zero
-        default:
-            return CGSize(width: collectionView.frame.width, height: 80)
-        }
+        return sectionHeader
     }
 }
