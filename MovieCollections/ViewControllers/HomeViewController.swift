@@ -13,13 +13,7 @@ import SnapKit
 typealias HomeDataSource = UICollectionViewDiffableDataSource<HomeSection, Movie>
 typealias HomeDSSnapshot = NSDiffableDataSourceSnapshot<HomeSection, Movie>
 
-class HomeViewController: UIViewController, Combinable {
-    enum HomeSubscriptionKey: String {
-        case movies
-    }
-    typealias SubscriptionKey = HomeSubscriptionKey
-    var subscriptions: [SubscriptionKey: AnyCancellable] = [:]
-    
+class HomeViewController: UIViewController {
     let viewModel = HomeViewModel(
         repository: HomeRepositoryImpl(
             apiService: APIService.shared
@@ -35,6 +29,7 @@ class HomeViewController: UIViewController, Combinable {
     }()
 
     private lazy var dataSource = self.createDataSource()
+    private var subscriptions = Set<AnyCancellable>()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -59,14 +54,14 @@ class HomeViewController: UIViewController, Combinable {
     }
     
     func setupBindings() {
-        subscriptions[.movies] = viewModel.$sections.sink(receiveValue: { [weak self] sections in
+        viewModel.$sections.sink(receiveValue: { [weak self] sections in
             var snapshot = HomeDSSnapshot()
             snapshot.appendSections(sections)
             sections.forEach { section in
                 snapshot.appendItems(section.movies, toSection: section)
             }
             self?.dataSource.apply(snapshot, animatingDifferences: true)
-        })
+        }).store(in: &subscriptions)
     }
 
     // MARK: Cell registrations

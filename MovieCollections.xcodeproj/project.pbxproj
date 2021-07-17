@@ -13,7 +13,6 @@
 		BC6C53FB26909AE300EF44F7 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6C53FA26909AE300EF44F7 /* HomeViewController.swift */; };
 		BC6C53FD26909AED00EF44F7 /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6C53FC26909AED00EF44F7 /* HomeViewModel.swift */; };
 		BC6C53FF2690A97200EF44F7 /* APIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6C53FE2690A97200EF44F7 /* APIService.swift */; };
-		BC6C54012690A9E600EF44F7 /* Combinable.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6C54002690A9E600EF44F7 /* Combinable.swift */; };
 		BC6C54042690ABCF00EF44F7 /* HomeMovieLoadingCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6C54032690ABCF00EF44F7 /* HomeMovieLoadingCell.swift */; };
 		BC6C54062690ADB500EF44F7 /* SectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6C54052690ADB500EF44F7 /* SectionHeaderView.swift */; };
 		BC6C54092690AF8800EF44F7 /* UIView+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC6C54082690AF8800EF44F7 /* UIView+Extensions.swift */; };
@@ -69,7 +68,6 @@
 		BC6C53FA26909AE300EF44F7 /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
 		BC6C53FC26909AED00EF44F7 /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
 		BC6C53FE2690A97200EF44F7 /* APIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIService.swift; sourceTree = "<group>"; };
-		BC6C54002690A9E600EF44F7 /* Combinable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Combinable.swift; sourceTree = "<group>"; };
 		BC6C54032690ABCF00EF44F7 /* HomeMovieLoadingCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeMovieLoadingCell.swift; sourceTree = "<group>"; };
 		BC6C54052690ADB500EF44F7 /* SectionHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionHeaderView.swift; sourceTree = "<group>"; };
 		BC6C54082690AF8800EF44F7 /* UIView+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Extensions.swift"; sourceTree = "<group>"; };
@@ -147,7 +145,6 @@
 				BC6C54022690ABB800EF44F7 /* Views */,
 				BC6C53F826909AD100EF44F7 /* MainTabBarController.swift */,
 				BC6C53FA26909AE300EF44F7 /* HomeViewController.swift */,
-				BC6C54002690A9E600EF44F7 /* Combinable.swift */,
 				BCC0469426919D9400DF1B24 /* FavoriteViewController.swift */,
 				CA3F6F282697598900FE41D9 /* DemoViewController.swift */,
 			);
@@ -438,7 +435,6 @@
 				BC6C54152690BABC00EF44F7 /* Reusable.swift in Sources */,
 				CAEEF3B42693519E002FCEC9 /* CollectionItemCell.swift in Sources */,
 				BC6C54202690C67F00EF44F7 /* MoviesResponse.swift in Sources */,
-				BC6C54012690A9E600EF44F7 /* Combinable.swift in Sources */,
 				BCC046992691A51F00DF1B24 /* FavoriteSection.swift in Sources */,
 				CA3F6F272697424F00FE41D9 /* HomeSectionBackgroundView.swift in Sources */,
 				BC6C53FB26909AE300EF44F7 /* HomeViewController.swift in Sources */,

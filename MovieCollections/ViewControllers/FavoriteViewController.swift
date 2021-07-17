@@ -13,17 +13,11 @@ import Combine
 typealias FavoriteDataSource = UICollectionViewDiffableDataSource<FavoriteSection, Movie>
 typealias FavoriteSnapshot = NSDiffableDataSourceSnapshot<FavoriteSection, Movie>
 
-class FavoriteViewController: UIViewController, Combinable {
+class FavoriteViewController: UIViewController {
     enum Design {
         static let sideInsets: CGFloat = 16
         static let itemSpacing: CGFloat = 16
     }
-    // MARK: Combine subscription keys
-    enum FavoriteVCSubscriptionKey: String {
-        case data
-    }
-    typealias SubscriptionKey = FavoriteVCSubscriptionKey
-    var subscriptions: [SubscriptionKey : AnyCancellable] = [:]
     
     // MARK: Views declaration
     private lazy var collectionView: UICollectionView = {
@@ -44,6 +38,7 @@ class FavoriteViewController: UIViewController, Combinable {
     
     let searchController = UISearchController(searchResultsController: nil)
     private lazy var dataSource = self.createDatasource()
+    private var subscriptions = Set<AnyCancellable>()
     
     // MARK: Datas
     let viewModel = FavoriteViewModel(repository: FavoriteRepositoryImpl())
@@ -107,9 +102,9 @@ class FavoriteViewController: UIViewController, Combinable {
     }
     
     func setupBinding() {
-        subscriptions[.data] = viewModel.$filteredSections.sink(receiveValue: { [weak self] sections in
+        viewModel.$filteredSections.sink(receiveValue: { [weak self] sections in
             self?.applyData(sections)
-        })
+        }).store(in: &subscriptions)
     }
 }
 

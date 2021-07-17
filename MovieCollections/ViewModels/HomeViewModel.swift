@@ -26,18 +26,9 @@ enum HomeSectionIndex: Int {
     }
 }
 
-class HomeViewModel: Combinable {
-    enum HomeVMSubscriptionKey: String {
-        case upcoming
-        case collections
-        case topRated
-        case trending
-    }
-    typealias SubscriptionKey = HomeVMSubscriptionKey
-    
-    var subscriptions: [SubscriptionKey : AnyCancellable] = [:]
-    
+class HomeViewModel {
     let repository: HomeRepository
+    private var subscriptions = Set<AnyCancellable>()
     
     init(repository: HomeRepository) {
         self.repository = repository
@@ -46,21 +37,21 @@ class HomeViewModel: Combinable {
     @Published var sections: [HomeSection] = []
     
     func fetchData() {
-        subscriptions[.trending] = repository.getTrendingMovies().sink { [weak self] movies in
+        repository.getTrendingMovies().sink { [weak self] movies in
             self?.parseMovie(movies: movies, index: .trending)
-        }
+        }.store(in: &subscriptions)
         
-        subscriptions[.topRated] = repository.getTopRatedMovies().sink(receiveValue: { [weak self] movies in
+        repository.getTopRatedMovies().sink(receiveValue: { [weak self] movies in
             self?.parseMovie(movies: movies, index: .topRated)
-        })
+        }).store(in: &subscriptions)
 
-        subscriptions[.upcoming] = repository.getUpcomingMovies().sink(receiveValue: { [weak self] movies in
+        repository.getUpcomingMovies().sink(receiveValue: { [weak self] movies in
             self?.parseMovie(movies: movies, index: .feature)
-        })
+        }).store(in: &subscriptions)
 
-        subscriptions[.collections] = repository.getFavoriteCollections().sink(receiveValue: { [weak self] movies in
+        repository.getFavoriteCollections().sink(receiveValue: { [weak self] movies in
             self?.parseMovie(movies: movies, index: .collections)
-        })
+        }).store(in: &subscriptions)
     }
     
     func parseMovie(movies: [Movie], index: HomeSectionIndex) {

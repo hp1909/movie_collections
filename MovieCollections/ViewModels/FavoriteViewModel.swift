@@ -8,13 +8,7 @@
 import Foundation
 import Combine
 
-class FavoriteViewModel: Combinable {
-    enum FavoriteVMSubscriptionKey: String {
-        case initialData
-    }
-    typealias SubscriptionKey = FavoriteVMSubscriptionKey
-    var subscriptions: [SubscriptionKey : AnyCancellable] = [:]
-    
+class FavoriteViewModel {
     let repository: FavoriteRepository
     
     var sections: [FavoriteSection] = [] {
@@ -22,6 +16,9 @@ class FavoriteViewModel: Combinable {
             filteredSections = sections
         }
     }
+
+    private var subscriptions = Set<AnyCancellable>()
+
     @Published var filteredSections: [FavoriteSection] = []
     
     init(repository: FavoriteRepository) {
@@ -29,9 +26,9 @@ class FavoriteViewModel: Combinable {
     }
     
     func loadInitialData() {
-        subscriptions[.initialData] = repository.getFavoriteMovies().sink(receiveValue: { [weak self] sections in
+        repository.getFavoriteMovies().sink(receiveValue: { [weak self] sections in
             self?.sections = sections
-        })
+        }).store(in: &subscriptions)
     }
     
     func filter(_ keyword: String) {
